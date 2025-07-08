@@ -1,6 +1,13 @@
 (function () {
-    const scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
-    const tenantId = scriptTag?.getAttribute("data-tenant-id") || "unknown_tenant";
+    // ✅ SAFELY EXTRACT TENANT ID
+    let tenantId = "unknown_tenant";
+    const scripts = document.getElementsByTagName('script');
+    for (let script of scripts) {
+      if (script.src && script.src.includes("widget.js")) {
+        tenantId = script.getAttribute("data-tenant-id") || "unknown_tenant";
+        break;
+      }
+    }
   
     const toggleBtn = document.createElement("div");
     toggleBtn.id = "widget-toggle";
