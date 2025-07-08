@@ -1,5 +1,4 @@
 (function () {
-    // Get the <script> tag that loaded this widget and extract the tenant ID
     const scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
     const tenantId = scriptTag?.getAttribute("data-tenant-id") || "unknown_tenant";
   
@@ -47,27 +46,33 @@
     document.body.appendChild(widgetBox);
   
     toggleBtn.addEventListener("click", () => {
-      widgetBox.style.display = widgetBox.style.display === "none" ? "block" : "none";
-    });
+      const isHidden = widgetBox.style.display === "none";
+      widgetBox.style.display = isHidden ? "block" : "none";
   
-    document.getElementById("widgetSubmitBtn").addEventListener("click", () => {
-      const name = document.getElementById("widgetNameInput").value;
-      if (!name.trim()) return alert("Please enter your name");
+      // Only add event listener once when widget is opened for the first time
+      if (isHidden && !widgetBox.dataset.listenerAdded) {
+        widgetBox.dataset.listenerAdded = "true";
+        const submitBtn = widgetBox.querySelector("#widgetSubmitBtn");
+        submitBtn.addEventListener("click", () => {
+          const name = widgetBox.querySelector("#widgetNameInput").value.trim();
+          if (!name) return alert("Please enter your name");
   
-      fetch("http://localhost:3000/api/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, tenantId })
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.message || "Submitted!");
-        document.getElementById("widgetNameInput").value = "";
-      })
-      .catch(err => {
-        alert("Failed to submit");
-        console.error(err);
-      });
+          fetch("http://localhost:3000/api/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, tenantId })
+          })
+          .then(res => res.json())
+          .then(data => {
+            alert(data.message || "Submitted!");
+            widgetBox.querySelector("#widgetNameInput").value = "";
+          })
+          .catch(err => {
+            alert("Failed to submit");
+            console.error(err);
+          });
+        });
+      }
     });
   })();
   
