@@ -48,13 +48,22 @@
   
     document.getElementById("widgetSubmitBtn").addEventListener("click", () => {
       const name = document.getElementById("widgetNameInput").value;
-      if (name.trim()) {
-        const previous = JSON.parse(localStorage.getItem("widget_submissions") || "[]");
-        previous.push({ name, timestamp: new Date().toISOString() });
-        localStorage.setItem("widget_submissions", JSON.stringify(previous));
-        alert(`Thanks, ${name}!`);
+      if (!name.trim()) return alert("Please enter your name");
+  
+      fetch("http://localhost:3000/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.message || "Submitted!");
         document.getElementById("widgetNameInput").value = "";
-      }
+      })
+      .catch(err => {
+        alert("Failed to submit");
+        console.error(err);
+      });
     });
   })();
   
