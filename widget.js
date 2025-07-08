@@ -1,20 +1,17 @@
 (function () {
-    function getTenantIdFromScript() {
-      const scripts = document.getElementsByTagName("script");
-      for (let script of scripts) {
-        if (script.src && script.src.includes("widget.js") && script.src.includes("tenantId=")) {
-          try {
-            const url = new URL(script.src);
-            return url.searchParams.get("tenantId") || "unknown_tenant";
-          } catch (e) {
-            console.error("Invalid widget.js URL", e);
-          }
-        }
-      }
-      return "unknown_tenant";
+    let tenantId = "unknown_tenant";
+    try {
+      const scriptTag = document.currentScript || (function () {
+        const scripts = document.getElementsByTagName('script');
+        return scripts[scripts.length - 1];
+      })();
+      
+      const url = new URL(scriptTag.src);
+      tenantId = url.searchParams.get("tenantId") || "unknown_tenant";
+    } catch (err) {
+      console.warn("⚠️ Could not extract tenantId from script URL");
     }
   
-    const tenantId = getTenantIdFromScript();
   
     const toggleBtn = document.createElement("div");
     toggleBtn.id = "widget-toggle";
