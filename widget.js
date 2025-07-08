@@ -1,13 +1,20 @@
 (function () {
-    // ✅ SAFELY EXTRACT TENANT ID
-    let tenantId = "unknown_tenant";
-    const scripts = document.getElementsByTagName('script');
-    for (let script of scripts) {
-      if (script.src && script.src.includes("widget.js")) {
-        tenantId = script.getAttribute("data-tenant-id") || "unknown_tenant";
-        break;
+    function getTenantIdFromScript() {
+      const scripts = document.getElementsByTagName("script");
+      for (let script of scripts) {
+        if (script.src && script.src.includes("widget.js") && script.src.includes("tenantId=")) {
+          try {
+            const url = new URL(script.src);
+            return url.searchParams.get("tenantId") || "unknown_tenant";
+          } catch (e) {
+            console.error("Invalid widget.js URL", e);
+          }
+        }
       }
+      return "unknown_tenant";
     }
+  
+    const tenantId = getTenantIdFromScript();
   
     const toggleBtn = document.createElement("div");
     toggleBtn.id = "widget-toggle";
@@ -56,7 +63,6 @@
       const isHidden = widgetBox.style.display === "none";
       widgetBox.style.display = isHidden ? "block" : "none";
   
-      // Only add event listener once when widget is opened for the first time
       if (isHidden && !widgetBox.dataset.listenerAdded) {
         widgetBox.dataset.listenerAdded = "true";
         const submitBtn = widgetBox.querySelector("#widgetSubmitBtn");
@@ -69,15 +75,15 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ name, tenantId })
           })
-          .then(res => res.json())
-          .then(data => {
-            alert(data.message || "Submitted!");
-            widgetBox.querySelector("#widgetNameInput").value = "";
-          })
-          .catch(err => {
-            alert("Failed to submit");
-            console.error(err);
-          });
+            .then(res => res.json())
+            .then(data => {
+              alert(data.message || "Submitted!");
+              widgetBox.querySelector("#widgetNameInput").value = "";
+            })
+            .catch(err => {
+              alert("Failed to submit");
+              console.error(err);
+            });
         });
       }
     });
