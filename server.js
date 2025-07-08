@@ -1,4 +1,3 @@
-// server.js
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -14,7 +13,7 @@ app.use(bodyParser.json());
 app.post("/api/submit", (req, res) => {
   const { name, tenantId } = req.body;
 
-  console.log("📥 Received from widget:", { name, tenantId });
+  console.log("🔔 Received submission:", { name, tenantId });
 
   if (!name || !tenantId) {
     return res.status(400).json({ error: "Name and tenantId are required" });
@@ -41,13 +40,13 @@ app.get("/api/data", (req, res) => {
   res.json(submissions);
 });
 
-// POST /api/clear – Clear all submissions
+// Clear endpoint (for dev use)
 app.post("/api/clear", (req, res) => {
   submissions = [];
-  console.log("🧹 All submissions cleared.");
+  console.log("🧹 Submissions cleared.");
   res.json({ message: "All submissions cleared." });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

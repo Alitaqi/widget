@@ -12,7 +12,7 @@
 </head>
 <body>
   <h1>Submitted Widget Data</h1>
-  <button onclick="loadData()">Refresh</button>
+  <button onclick="loadData()">🔄 Refresh</button>
   <table id="dataTable">
     <thead>
       <tr>
@@ -36,7 +36,7 @@
             const row = document.createElement("tr");
             row.innerHTML = `
               <td>${index + 1}</td>
-              <td>${entry.tenantId}</td>
+              <td>${entry.tenantId || '❌ undefined'}</td>
               <td>${entry.name}</td>
               <td>${new Date(entry.timestamp).toLocaleString()}</td>
             `;
