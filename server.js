@@ -12,12 +12,20 @@ app.use(bodyParser.json());
 
 // POST /api/submit
 app.post("/api/submit", (req, res) => {
-  const { name } = req.body;
-  if (!name) return res.status(400).json({ error: "Name is required" });
-
-  submissions.push({ name, timestamp: new Date().toISOString() });
-  res.json({ message: "Submission received" });
-});
+    const { name, tenantId } = req.body;
+  
+    if (!name || !tenantId) {
+      return res.status(400).json({ error: "Name and tenantId are required" });
+    }
+  
+    submissions.push({
+      tenantId,
+      name,
+      timestamp: new Date().toISOString()
+    });
+  
+    res.json({ message: "Submission received" });
+  });
 
 // GET /api/data
 app.get("/api/data", (req, res) => {

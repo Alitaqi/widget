@@ -1,4 +1,8 @@
 (function () {
+    // Get the <script> tag that loaded this widget and extract the tenant ID
+    const scriptTag = document.currentScript || document.querySelector('script[src*="widget.js"]');
+    const tenantId = scriptTag?.getAttribute("data-tenant-id") || "unknown_tenant";
+  
     const toggleBtn = document.createElement("div");
     toggleBtn.id = "widget-toggle";
     toggleBtn.innerText = "Open Widget";
@@ -53,7 +57,7 @@
       fetch("http://localhost:3000/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ name, tenantId })
       })
       .then(res => res.json())
       .then(data => {
