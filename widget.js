@@ -7,11 +7,9 @@
         return scripts[scripts.length - 1];
       })();
   
-      const src = scriptTag.getAttribute("src");
-      const url = new URL(src);
+      const url = new URL(scriptTag.src);
       tenantId = url.searchParams.get("tenantId") || "unknown_tenant";
-  
-      console.log("✅ Parsed tenantId:", tenantId);
+      console.log("📦 Parsed tenantId:", tenantId);
     } catch (err) {
       console.warn("⚠️ Could not extract tenantId from script URL");
     }
@@ -66,21 +64,29 @@
       if (isHidden && !widgetBox.dataset.listenerAdded) {
         widgetBox.dataset.listenerAdded = "true";
         const submitBtn = widgetBox.querySelector("#widgetSubmitBtn");
+  
         submitBtn.addEventListener("click", () => {
           const name = widgetBox.querySelector("#widgetNameInput").value.trim();
           if (!name) return alert("Please enter your name");
   
+          const payload = {
+            name,
+            tenantId, // ✅ MAKE SURE THIS IS INCLUDED
+          };
+  
+          console.log("📤 Sending payload:", payload);
+  
           fetch("http://localhost:3000/api/submit", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, tenantId })
+            body: JSON.stringify(payload),
           })
-            .then(res => res.json())
-            .then(data => {
+            .then((res) => res.json())
+            .then((data) => {
               alert(data.message || "Submitted!");
               widgetBox.querySelector("#widgetNameInput").value = "";
             })
-            .catch(err => {
+            .catch((err) => {
               alert("Failed to submit");
               console.error(err);
             });
