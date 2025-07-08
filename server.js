@@ -12,19 +12,22 @@ app.use(bodyParser.json());
 
 // POST /api/submit – Receives name + tenantId from widget
 app.post("/api/submit", (req, res) => {
-    const { name, tenantId } = req.body;
-    if (!name || !tenantId) {
-      return res.status(400).json({ error: "Name and tenantId are required" });
-    }
-  
-    submissions.push({
-      tenantId,
-      name,
-      timestamp: new Date().toISOString()
-    });
-  
-    res.json({ message: "Submission received" });
+  const { name, tenantId } = req.body;
+
+  console.log("📥 Received from widget:", { name, tenantId });
+
+  if (!name || !tenantId) {
+    return res.status(400).json({ error: "Name and tenantId are required" });
+  }
+
+  submissions.push({
+    tenantId,
+    name,
+    timestamp: new Date().toISOString()
   });
+
+  res.json({ message: "Submission received" });
+});
 
 // GET /api/data – View all or filtered by tenantId
 app.get("/api/data", (req, res) => {
@@ -38,7 +41,7 @@ app.get("/api/data", (req, res) => {
   res.json(submissions);
 });
 
-// POST /api/clear – Clear all submissions (for dev/testing)
+// POST /api/clear – Clear all submissions
 app.post("/api/clear", (req, res) => {
   submissions = [];
   console.log("🧹 All submissions cleared.");

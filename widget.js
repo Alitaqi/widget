@@ -1,17 +1,21 @@
 (function () {
     let tenantId = "unknown_tenant";
+  
     try {
-      const scriptTag = document.currentScript || (function () {
-        const scripts = document.getElementsByTagName('script');
-        return scripts[scripts.length - 1];
-      })();
-      
-      const url = new URL(scriptTag.src);
-      tenantId = url.searchParams.get("tenantId") || "unknown_tenant";
+      const scripts = document.getElementsByTagName("script");
+      for (let i = scripts.length - 1; i >= 0; i--) {
+        const src = scripts[i].getAttribute("src");
+        if (src && src.includes("widget.js")) {
+          const url = new URL(src, window.location.href); // Ensures full URL is parsed
+          tenantId = url.searchParams.get("tenantId") || "unknown_tenant";
+          break;
+        }
+      }
     } catch (err) {
-      console.warn("⚠️ Could not extract tenantId from script URL");
+      console.warn("⚠️ Could not extract tenantId from script URL", err);
     }
   
+    console.log("✅ Parsed tenantId:", tenantId);
   
     const toggleBtn = document.createElement("div");
     toggleBtn.id = "widget-toggle";
