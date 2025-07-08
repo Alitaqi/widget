@@ -9,11 +9,11 @@ let submissions = [];
 app.use(cors());
 app.use(bodyParser.json());
 
-// POST /api/submit – Receives name + tenantId from widget
+// POST /api/submit
 app.post("/api/submit", (req, res) => {
   const { name, tenantId } = req.body;
 
-  console.log("🔔 Received submission:", { name, tenantId });
+  console.log("📥 Received submission:", req.body);
 
   if (!name || !tenantId) {
     return res.status(400).json({ error: "Name and tenantId are required" });
@@ -22,13 +22,13 @@ app.post("/api/submit", (req, res) => {
   submissions.push({
     tenantId,
     name,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   });
 
   res.json({ message: "Submission received" });
 });
 
-// GET /api/data – View all or filtered by tenantId
+// GET /api/data
 app.get("/api/data", (req, res) => {
   const { tenantId } = req.query;
 
@@ -40,13 +40,12 @@ app.get("/api/data", (req, res) => {
   res.json(submissions);
 });
 
-// Clear endpoint (for dev use)
+// Clear all data (dev only)
 app.post("/api/clear", (req, res) => {
   submissions = [];
-  console.log("🧹 Submissions cleared.");
-  res.json({ message: "All submissions cleared." });
+  res.json({ message: "Cleared all submissions." });
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
 });

@@ -3,15 +3,14 @@
   
     try {
       const scriptTag = document.currentScript || (function () {
-        const scripts = document.getElementsByTagName('script');
+        const scripts = document.getElementsByTagName("script");
         return scripts[scripts.length - 1];
       })();
   
-      const url = new URL(scriptTag.src);
-      tenantId = url.searchParams.get("tenantId") || "unknown_tenant";
+      tenantId = scriptTag.getAttribute("data-tenant-id") || "unknown_tenant";
       console.log("📦 Parsed tenantId:", tenantId);
     } catch (err) {
-      console.warn("⚠️ Could not extract tenantId from script URL");
+      console.warn("⚠️ Could not extract tenantId");
     }
   
     const toggleBtn = document.createElement("div");
@@ -69,11 +68,7 @@
           const name = widgetBox.querySelector("#widgetNameInput").value.trim();
           if (!name) return alert("Please enter your name");
   
-          const payload = {
-            name,
-            tenantId, // ✅ MAKE SURE THIS IS INCLUDED
-          };
-  
+          const payload = { name, tenantId };
           console.log("📤 Sending payload:", payload);
   
           fetch("http://localhost:3000/api/submit", {
@@ -81,12 +76,12 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload),
           })
-            .then((res) => res.json())
-            .then((data) => {
+            .then(res => res.json())
+            .then(data => {
               alert(data.message || "Submitted!");
               widgetBox.querySelector("#widgetNameInput").value = "";
             })
-            .catch((err) => {
+            .catch(err => {
               alert("Failed to submit");
               console.error(err);
             });
